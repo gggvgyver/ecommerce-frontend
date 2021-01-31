@@ -2,10 +2,10 @@ import Head from 'next/head'
 import Link from 'next/link'
 import styles from '../styles/Home.module.css'
 
-import products from '../products.json'
-import { fromImageToUrl } from '../utils/urls'
+import { fromImageToUrl, API_URL } from '../utils/urls'
+import { twoDecimals } from '../utils/format'
 
-export default function Home() {
+export default function Home({ products }) {
   return (
     <div>
       <Head>
@@ -22,7 +22,7 @@ export default function Home() {
                   <img src={fromImageToUrl(product.image)} />
                 </div>
                 <div className={styles.product__Col}>
-                  {product.name} {product.price}
+                  {product.name} {twoDecimals(product.price)} 원
                 </div>
               </div>
             </a>
@@ -31,4 +31,17 @@ export default function Home() {
       ))}
     </div>
   )
+}
+
+export async function getStaticProps() {
+  // 상품을 불러옴
+  const products_res = await fetch(`${API_URL}/products/`)
+  const products = await products_res.json()
+  
+  // 상품을 props로 반환
+  return {
+    props: {
+      products
+    }
+  }
 }
